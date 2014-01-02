@@ -1,0 +1,203 @@
+" Shell
+set shell=sh
+
+" Turn on mouse scrolling
+set mouse=a
+
+" Disable autosave of default session
+let g:session_autosave = 'no'
+
+" Bundles to uninstall
+"yadr vim-delete-plugin -u mattn/zencoding-vim
+"ydv -u mattn/zencoding-vim
+
+" Set path to python for YouCompleteMe
+let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+
+" Run current file in ruby
+nmap <F6> :w<CR>:!ruby %<CR>
+ " Run current file in ruby
+imap <F6> <ESC>:w<CR>:!ruby %<CR>
+
+" Turbux mappings.
+let g:no_turbux_mappings = 1
+map <leader><leader>m <Plug>SendTestToTmux
+map <leader><leader>M <Plug>SendFocusedTestToTmux
+
+"convenient way to get back to normal mode from insert mode.
+inoremap jj <ESC>
+inoremap kj <ESC>
+inoremap jk <ESC>
+
+autocmd BufLeave,FocusLost * silent! wall  "Autosave on lost focus
+set autoread "Auto reload when file is changed by another program if no unsaved changes exist.
+
+" ================ Scrolling ========================
+
+set scrolloff=5         "Start scrolling when we're 8 lines away from margins
+set sidescrolloff=15
+set sidescroll=1
+
+" set solarized to use the dark background.
+syntax enable
+set background=dark
+let g:solarized_termtrans=1
+colorscheme solarized
+
+" save on ,,s.  Remap cmd+s to send ,,s in iTerm.
+noremap <silent> ,cmd-s          :update<CR>
+vnoremap <silent> ,cmd-s         <C-C>:update<CR>
+inoremap <silent> ,cmd-s         <C-O>:update<CR>
+
+" allow matching inside angle brackets. This is causing problems, disabling it.
+" set matchpairs+=<:>
+"set matchpairs+=<\%=:\%>
+"set matchpairs+=<\%:\%>
+
+" Try to indent better.
+filetype plugin indent on
+
+" Show word wrapping with ...
+set showbreak=...
+set wrap linebreak nolist
+
+" Show when lines are getting long.
+set colorcolumn=80
+
+" disable auto-insertion of comment characters when pressing o after a comment line.
+au FileType * setlocal formatoptions-=o
+
+" disable quickfix for now.
+let g:syntastic_auto_loc_list=2
+
+" Create mapping to clear window and run all specs.
+map ,,,m :call VimuxRunCommand("clear; rspec spec")<CR>
+
+" re-run last command in tmux pane.
+map ,,,rr :call VimuxRunCommand("!!<Tab>")<CR>
+
+" map cmd b to run in ruby.
+map ,cmd-b :call VimuxRunCommand("ruby " . bufname("%"))<CR>
+map ,cmd-B :VimuxInterruptRunner<CR>
+
+" add ctags mapping.
+"map <silent> <LocalLeader>rt :!ctags -R --exclude=".git\|.svn\|log\|tmp\|db\|pkg" --extra=+f<CR>
+map ,,,rt :!ctags -R --exclude=".git\|.svn\|log\|tmp\|db\|pkg" --extra=+f<CR>
+
+" set vim to use system clipboard by default.
+set clipboard=unnamed
+
+" Add NerdTreeToggle mapping for tmux.
+nmap ,cmd-N :NERDTreeToggle<CR>
+
+" Add cmd space for autocomplete
+imap ,cmd-Space <C-n>
+
+" escape from command line using jk and kj
+cmap jk <C-c>
+cmap kj <C-c>
+
+" Disable ex mode, it is a pain in the ass and I don't use it.
+nnoremap Q <nop>
+
+" Change inside various enclosures with Cmd-" and Cmd-'
+" The f makes it find the enclosure so you don't have
+" to be standing inside it
+nnoremap ,cmd-' f'ci'
+nnoremap ,cmd-" f"ci"
+nnoremap ,cmd-( f(ci(
+nnoremap ,cmd-) f)ci)
+nnoremap ,cmd-[ f[ci[
+nnoremap ,cmd-] f]ci]
+
+
+" move up/down quickly by using Cmd-j, Cmd-k
+" which will move us around by functions
+nnoremap                        < silent> ,cmd-j }
+nnoremap                        < silent> ,cmd-k {
+autocmd FileType ruby map       < buffer> ,cmd-j ]m
+autocmd FileType ruby map       < buffer> ,cmd-k [m
+autocmd FileType rspec map      < buffer> ,cmd-j }
+autocmd FileType rspec map      < buffer> ,cmd-k {
+autocmd FileType javascript map < buffer> ,cmd-k }
+autocmd FileType javascript map < buffer> ,cmd-j {
+
+
+" Command-/ to toggle comments
+map ,cmd-/ :TComment<CR>
+imap ,cmd-/ <Esc>:TComment<CR>i
+
+
+" Resize windows with arrow keys, is there a way to do this in iterm and vim?
+nnoremap ,cmd-Up <C-w>+
+nnoremap ,cmd-Down <C-w>-
+nnoremap ,cmd-Left <C-w><
+nnoremap ,cmd-Right  <C-w>>
+
+
+" ============================
+" Tabularize - alignment
+" ============================
+" Hit Cmd-Shift-A then type a character you want to align by
+nmap ,cmd-A :Tabularize /
+vmap ,cmd-A :Tabularize /
+
+" ============================
+" vim-ruby-conque
+" ============================
+" Cmd-Shift-R for RSpec
+nmap <silent> ,cmd-R :call RunRspecCurrentFileConque()<CR>
+" Cmd-Shift-L for RSpec Current Line
+nmap <silent> ,cmd-L :call RunRspecCurrentLineConque()<CR>
+" ,Cmd-R for Last conque command
+nmap <silent> ,,cmd-R :call RunLastConqueCommand()<CR>
+
+" Better highlighting of easymotion characters.
+" change the default EasyMotion shading to something more readable with Solarized
+hi link EasyMotionTarget ErrorMsg
+hi link EasyMotionShade  Comment
+let g:EasyMotion_do_shade = 0
+
+" adding support for ruby debugger.
+let g:ruby_debugger_progname = 'mvim'
+
+" remap vimux reset command to support zsh running in vi mode.
+let VimuxResetSequence = "kjddi"
+
+" Turn off the christmas lights
+nnoremap <cr> :nohlsearch<cr>
+
+" ,W strips all trailing whitespace from current file¬
+nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>¬
+
+" replace : with space in normal mode to make it easier to type Ex commands
+nnoremap <space> :
+
+" turn on mouse mode.
+set mouse+=a
+if &term =~ '^screen'
+    " tmux knows the extended mouse mode
+    set ttymouse=xterm2
+endif
+
+" Enable old regular expression engine.  Some people are finding it far faster
+" with ruby syntax files
+set re=1
+
+" After everything is loaded switch to zsh
+set shell=zsh
+" Make :! behave like my interactive command prompt, with shell aliases
+" set shellcmdflag=-ic
+
+" pull grep results into quickfix automatically
+autocmd QuickFixCmdPost *grep* cwindow
+
+" Set tmux navigator custom mappings
+let g:tmux_navigator_no_mappings = 1
+nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <c-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <c-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
+
+nnoremap <silent> <leader>sl :call argumentrewrap#RewrapArguments()<cr>
